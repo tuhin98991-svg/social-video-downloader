@@ -1,0 +1,47 @@
+
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Free Video Downloader</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f2f5ff;color:#182039;font-family:Arial,sans-serif}
+header{background:#fff;padding:20px;text-align:center;font-size:22px;font-weight:bold}
+main{max-width:500px;margin:55px auto;padding:25px;background:#fff;border-radius:18px;text-align:center;box-shadow:0 5px 25px #0001}
+h1{font-size:28px}
+p{line-height:1.7;color:#5d667a}
+input,button{width:100%;padding:15px;margin-top:12px;border-radius:10px;font-size:16px}
+input{border:1px solid #ccd2e1}
+button{background:#5145e5;color:white;border:0;font-weight:bold}
+.note{font-size:13px}
+footer{text-align:center;padding:20px;font-size:13px}
+</style>
+</head>
+<body>
+<header>⬇ Video Downloader</header>
+<main>
+<h1>ভিডিও ডাউনলোডার</h1>
+<p>নিজের অথবা অনুমতিপ্রাপ্ত ভিডিওর লিংক এখানে দাও।</p>
+<input id="url" type="url" placeholder="ভিডিও লিংক পেস্ট করো">
+<button onclick="checkLink()">লিংক যাচাই করো</button>
+<p id="msg">তোমার ভিডিওর লিংক এখানে পরীক্ষা করো।</p>
+<p class="note">নোট: এই প্রাথমিক সংস্করণে সরাসরি ভিডিও ডাউনলোড চালু নেই।</p>
+</main>
+<footer>© 2026 Video Downloader</footer>
+<script>
+function checkLink(){
+const field=document.getElementById('url');
+const msg=document.getElementById('msg');
+try{
+const u=new URL(field.value.trim());
+if(!['http:','https:'].includes(u.protocol))throw Error();
+msg.textContent='লিংকটি গ্রহণ করা হয়েছে। আসল ডাউনলোড ফিচার এখনো সংযুক্ত করা হয়নি।';
+}catch(e){
+msg.textContent='দয়া করে সঠিক ভিডিও লিংক দাও।';
+}
+}
+</script>
+</body>
+</html>
