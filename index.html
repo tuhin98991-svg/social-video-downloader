@@ -5,357 +5,463 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#0b1020">
-  <meta name="description" content="A simple tool for opening direct video file links.">
+  <meta name="description" content="ClipFetch helps you open and download directly accessible video files.">
   <title>ClipFetch - Video Downloader</title>
+
   <style>
     * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
+
+    :root {
+      --bg: #0b1020;
+      --panel: #121a2e;
+      --text: #f7f8ff;
+      --muted: #aab4ce;
+      --accent: #7c5cff;
+      --border: #29344e;
+    }
+
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0b1020;
-      color: #f8fafc;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
       line-height: 1.6;
     }
-    a { color: #93c5fd; }
+
+    a { color: inherit; }
+
     header {
-      padding: 18px 5%;
-      border-bottom: 1px solid #26324a;
+      padding: 18px 6%;
+      border-bottom: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 12px;
-      flex-wrap: wrap;
     }
+
     .brand {
-      color: #60a5fa;
       font-size: 23px;
       font-weight: 800;
       text-decoration: none;
     }
-    nav { display: flex; gap: 15px; flex-wrap: wrap; }
-    nav a { font-size: 13px; text-decoration: none; }
-    main { width: min(760px, 92%); margin: 45px auto; }
-    .hero { text-align: center; margin-bottom: 28px; }
+
+    .brand span { color: #9d88ff; }
+
     .tag {
-      color: #93c5fd;
-      background: #172746;
-      display: inline-block;
-      padding: 5px 12px;
+      color: #c9bdff;
+      background: #211b42;
+      padding: 5px 10px;
       border-radius: 20px;
       font-size: 12px;
     }
-    h1 { font-size: clamp(32px, 7vw, 48px); line-height: 1.15; }
-    .blue { color: #60a5fa; }
-    .muted { color: #aab7cc; }
-    .panel, .card {
-      background: #141e32;
-      border: 1px solid #2b3953;
-      border-radius: 17px;
-      padding: 22px;
+
+    main {
+      width: min(900px, 92%);
+      margin: 0 auto;
     }
-    label { display: block; margin-bottom: 9px; font-weight: bold; }
-    input {
+
+    .hero {
+      text-align: center;
+      padding: 55px 0 25px;
+    }
+
+    .hero h1 {
+      font-size: clamp(32px, 7vw, 52px);
+      line-height: 1.15;
+      margin: 12px 0;
+      letter-spacing: -1px;
+    }
+
+    .hero h1 span {
+      color: #9d88ff;
+    }
+
+    .hero p, .muted { color: var(--muted); }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+      margin: 20px 0;
+      box-shadow: 0 15px 45px #00000020;
+    }
+
+    label {
       display: block;
-      width: 100%;
-      padding: 15px;
-      border-radius: 10px;
-      border: 1px solid #3b4b67;
-      background: #0b1020;
-      color: white;
-      font-size: 16px;
+      margin-bottom: 9px;
+      font-weight: 700;
     }
-    button, .action {
-      display: inline-block;
-      border: 0;
-      background: #3b82f6;
+
+    .input-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    input {
+      width: 100%;
+      min-width: 0;
+      background: #0b1020;
+      border: 1px solid #35415e;
+      border-radius: 12px;
       color: white;
-      border-radius: 10px;
-      padding: 13px 18px;
-      margin-top: 13px;
-      font-weight: bold;
+      padding: 15px;
       font-size: 15px;
+      outline: none;
+    }
+
+    input:focus { border-color: #9d88ff; }
+
+    button, .button {
+      border: 0;
+      background: var(--accent);
+      color: white;
+      padding: 14px 19px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
       cursor: pointer;
       text-decoration: none;
+      display: inline-block;
       text-align: center;
     }
-    button { width: 100%; }
-    button:hover, .action:hover { background: #2563eb; }
-    #result {
-      display: none;
-      background: #0b1020;
-      border: 1px solid #334663;
-      border-radius: 12px;
-      padding: 15px;
-      margin-top: 16px;
-      overflow-wrap: anywhere;
-      font-size: 14px;
+
+    button:hover, .button:hover { filter: brightness(1.12); }
+
+    button:disabled { opacity: .6; cursor: wait; }
+
+    .secondary {
+      background: #26324c;
+      border: 1px solid #3b4865;
     }
+
     .platforms {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 12px;
-      margin: 22px 0;
+      margin: 20px 0;
     }
-    .platform { text-align: center; }
-    .platform strong { display: block; margin-bottom: 5px; }
-    section.info { margin-top: 32px; }
-    h2 { font-size: 23px; }
-    .card p, .info p { color: #b4c0d3; }
-    .faq { border-bottom: 1px solid #2b3953; padding: 12px 0; }
-    footer {
-      border-top: 1px solid #26324a;
+
+    .platform {
+      border: 1px solid var(--border);
+      background: #121a2e;
+      border-radius: 14px;
+      padding: 16px 6px;
       text-align: center;
-      padding: 26px 12px;
-      color: #aab7cc;
+      font-size: 13px;
+      color: #e5e9f7;
+    }
+
+    .logo {
+      display: block;
+      font-size: 25px;
+      font-weight: 900;
+      margin-bottom: 5px;
+    }
+
+    .youtube { color: #ff4e58; }
+    .facebook { color: #62a0ff; }
+    .instagram { color: #ff83b8; }
+    .tiktok { color: #65f5e5; }
+    .xlogo { color: white; }
+    .vimeo { color: #6bbcff; }
+    .pinterest { color: #ff5c6c; }
+    .threads { color: #e2dafa; }
+
+    #status {
+      display: none;
+      margin-top: 18px;
+      padding: 14px;
+      border-radius: 12px;
+      background: #0b1020;
+      overflow-wrap: anywhere;
+    }
+
+    #actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .notice {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 15px;
+    }
+
+    section { margin: 36px 0; }
+
+    h2 { font-size: 24px; }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .step {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 17px;
+    }
+
+    .number {
+      color: #b5a5ff;
+      font-weight: 800;
+      font-size: 22px;
+    }
+
+    footer {
+      margin-top: 45px;
+      border-top: 1px solid var(--border);
+      padding: 25px 5%;
+      text-align: center;
+      color: var(--muted);
       font-size: 13px;
     }
+
     footer a { margin: 0 7px; }
-    @media (min-width: 600px) {
-      .platforms { grid-template-columns: repeat(4, 1fr); }
+
+    @media (max-width: 600px) {
+      header { padding: 15px 4%; }
+      .hero { padding-top: 38px; }
+      .panel { padding: 17px; }
+      .input-row { flex-direction: column; }
+      .platforms { grid-template-columns: repeat(2, 1fr); }
+      .steps { grid-template-columns: 1fr; }
+      .input-row button { width: 100%; }
     }
   </style>
 </head>
+
 <body>
   <header>
-    <a class="brand" href="#">▶ ClipFetch</a>
-    <nav>
-      <a href="#home">Home</a>
-      <a href="#how">How It Works</a>
-      <a href="#faq">FAQ</a>
-      <a href="#about">About</a>
-    </nav>
+    <a class="brand" href="#">Clip<span>Fetch</span></a>
+    <span class="tag">VIDEO TOOL</span>
   </header>
 
-  <main id="home">
+  <main>
     <div class="hero">
-      <span class="tag">SIMPLE VIDEO LINK TOOL</span>
-      <h1>Save Your Videos <span class="blue">Easily</span></h1>
-      <p class="muted">
-        Paste a direct video file link to open it in your browser.
-        Use only videos you own or have permission to download.
-      </p>
+      <div class="tag">SIMPLE · FAST · MOBILE FRIENDLY</div>
+      <h1>Video Downloader<br><span>Made Simple</span></h1>
+      <p>Paste a directly accessible video URL to try downloading it.</p>
     </div>
 
     <div class="panel">
       <form id="videoForm">
-        <label for="videoUrl">Video URL</label>
-        <input id="videoUrl" type="url"
-          placeholder="https://example.com/video.mp4"
-          autocomplete="url" required>
-        <button type="submit">Check Video Link</button>
+        <label for="videoUrl">Paste your video link</label>
+        <div class="input-row">
+          <input
+            id="videoUrl"
+            type="url"
+            placeholder="https://example.com/video.mp4"
+            autocomplete="url"
+            required
+          >
+          <button id="submitBtn" type="submit">Get Video</button>
+        </div>
       </form>
-      <div id="result" role="status" aria-live="polite"></div>
-      <p class="muted" style="font-size:12px">
-        Direct video file links only. Social media post links may not work.
+
+      <div id="status" role="status" aria-live="polite"></div>
+      <div id="actions"></div>
+
+      <p class="notice">
+        Note: Social media post links are not the same as direct video
+        file links. This GitHub Pages demo cannot extract videos from
+        every platform or guarantee every resolution.
       </p>
     </div>
 
-    <div class="platforms">
-      <div class="card platform">
-        <strong>YouTube</strong>
-        <span class="muted">Official options</span>
-      </div>
-      <div class="card platform">
-        <strong>Facebook</strong>
-        <span class="muted">Permitted videos</span>
-      </div>
-      <div class="card platform">
-        <strong>Instagram</strong>
-        <span class="muted">Your own content</span>
-      </div>
-      <div class="card platform">
-        <strong>TikTok</strong>
-        <span class="muted">Save when allowed</span>
-      </div>
-    </div>
+    <section>
+      <h2>Supported platforms</h2>
+      <p class="muted">
+        Paste a link to try it. Platform logos below are shortcuts to
+        the original websites, not a guarantee of downloading support.
+      </p>
 
-    <section class="info" id="how">
-      <h2>How It Works</h2>
-      <div class="card">
-        <p><strong>1.</strong> Copy a direct video file URL.</p>
-        <p><strong>2.</strong> Paste it into the input box above.</p>
-        <p><strong>3.</strong> Check the link and open the video.</p>
-        <p><strong>4.</strong> If your browser supports downloading it, use its download option.</p>
+      <div class="platforms">
+        <a class="platform" href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer">
+          <span class="logo youtube">▶</span>YouTube
+        </a>
+        <a class="platform" href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer">
+          <span class="logo facebook">f</span>Facebook
+        </a>
+        <a class="platform" href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer">
+          <span class="logo instagram">◎</span>Instagram
+        </a>
+        <a class="platform" href="https://www.tiktok.com/" target="_blank" rel="noopener noreferrer">
+          <span class="logo tiktok">♪</span>TikTok
+        </a>
+        <a class="platform" href="https://x.com/" target="_blank" rel="noopener noreferrer">
+          <span class="logo xlogo">𝕏</span>X
+        </a>
+        <a class="platform" href="https://vimeo.com/" target="_blank" rel="noopener noreferrer">
+          <span class="logo vimeo">v</span>Vimeo
+        </a>
+        <a class="platform" href="https://www.pinterest.com/" target="_blank" rel="noopener noreferrer">
+          <span class="logo pinterest">p</span>Pinterest
+        </a>
+        <a class="platform" href="https://www.threads.net/" target="_blank" rel="noopener noreferrer">
+          <span class="logo threads">@</span>Threads
+        </a>
       </div>
     </section>
 
-    <section class="info" id="about">
-      <h2>About ClipFetch</h2>
-      <div class="card">
-        <p>
-          ClipFetch is a simple website interface for working with
-          direct video file links. It does not currently extract or
-          download videos from social media posts.
-        </p>
+    <section>
+      <h2>How to use ClipFetch</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="number">01</div>
+          <strong>Copy a link</strong>
+          <p class="muted">Copy the direct URL of a video file you can access.</p>
+        </div>
+        <div class="step">
+          <div class="number">02</div>
+          <strong>Paste the link</strong>
+          <p class="muted">Paste it in the box above and press Get Video.</p>
+        </div>
+        <div class="step">
+          <div class="number">03</div>
+          <strong>Download if available</strong>
+          <p class="muted">If the server allows access, use the download option.</p>
+        </div>
       </div>
     </section>
 
-    <section class="info" id="privacy">
-      <h2>Privacy Policy</h2>
-      <div class="card">
-        <p>
-          This page does not send submitted links to a ClipFetch server.
-          Links are handled in your browser. Opening an external link
-          connects your browser to that external website.
-        </p>
-        <p>
-          If advertising or analytics services are added in the future,
-          this policy should be updated to describe their data practices.
-        </p>
-      </div>
+    <section>
+      <h2>About</h2>
+      <p class="muted">
+        ClipFetch is a simple browser-based tool for trying to download
+        directly accessible video files. It does not host videos or
+        bypass platform restrictions.
+      </p>
     </section>
 
-    <section class="info" id="terms">
-      <h2>Terms of Use</h2>
-      <div class="card">
-        <p>
-          Use this tool only with content you own or are authorized
-          to save. Respect copyright, privacy, and each platform's
-          terms. This website does not guarantee that every URL will work.
-        </p>
-      </div>
+    <section>
+      <h2>Frequently asked questions</h2>
+      <p><strong>Why is my social media link not downloading?</strong></p>
+      <p class="muted">
+        Many social media links point to a webpage rather than a video
+        file. Those links require a compatible service and permission
+        to access the media.
+      </p>
+      <p><strong>Can I choose HD or 4K quality?</strong></p>
+      <p class="muted">
+        This HTML-only version cannot choose resolutions that the source
+        does not expose as downloadable files.
+      </p>
+      <p><strong>Is every video supported?</strong></p>
+      <p class="muted">
+        No. Access rules, CORS, login requirements, and copyright
+        restrictions may prevent downloading.
+      </p>
     </section>
 
-    <section class="info" id="faq">
-      <h2>Frequently Asked Questions</h2>
-      <div class="faq">
-        <strong>Why does a social media link not work?</strong>
-        <p class="muted">A post URL is not usually a direct video file URL. This page does not extract videos from posts.</p>
-      </div>
-      <div class="faq">
-        <strong>Why does my video open instead of downloading?</strong>
-        <p class="muted">The browser or remote server may choose to play the file instead of downloading it.</p>
-      </div>
-      <div class="faq">
-        <strong>Is every video supported?</strong>
-        <p class="muted">No. The file must be accessible, and the remote server must permit access.</p>
-      </div>
+    <section>
+      <h2>Privacy</h2>
+      <p class="muted">
+        This page has no built-in account system. When you submit a URL,
+        your browser attempts to access that URL. External websites may
+        apply their own privacy policies and access rules.
+      </p>
     </section>
   </main>
 
   <footer>
-    <p>© <span id="year"></span> ClipFetch. All rights reserved.</p>
-    <a href="#about">About</a>
-    <a href="#privacy">Privacy Policy</a>
-    <a href="#terms">Terms of Use</a>
-    <p>Use responsibly. Respect content owners.</p>
+    <p>© <span id="year"></span> ClipFetch</p>
+    <p>Only download content you own or have permission to save.</p>
+    <a href="#top" onclick="window.scrollTo(0,0); return false;">Back to top</a>
   </footer>
 
   <script>
     const form = document.getElementById("videoForm");
     const input = document.getElementById("videoUrl");
-    const result = document.getElementById("result");
+    const statusBox = document.getElementById("status");
+    const actions = document.getElementById("actions");
+    const submitBtn = document.getElementById("submitBtn");
+
     document.getElementById("year").textContent =
       new Date().getFullYear();
 
-    form.addEventListener("submit", function (event) {
-      event.preventDefault();
-      result.replaceChildren();
-      result.style.display = "block";
+    function showMessage(message) {
+      statusBox.style.display = "block";
+      statusBox.textContent = message;
+      actions.replaceChildren();
+    }
 
-      let url;
-      try {
-        url = new URL(input.value.trim());
-      } catch {
-        result.textContent = "Please enter a valid URL.";
-        return;
-      }
-
-      if (!["http:", "https:"].includes(url.protocol)) {
-        result.textContent = "Only HTTP and HTTPS links are supported.";
-        return;
-      }
-
-      const direct = /\.(mp4|webm|ogv|mov|m4v)$/i.test(url.pathname);
-      const text = document.createElement("p");
-      text.textContent = direct
-        ? "This looks like a direct video file link. Open it below. Downloading depends on the browser and remote server."
-        : "This does not look like a direct video file URL. This tool cannot extract video files from social media posts.";
-      result.appendChild(text);
-
+    function addLink(label, url, className) {
       const link = document.createElement("a");
-      link.className = "action";
-      link.href = url.href;
+      link.textContent = label;
+      link.href = url;
+      link.className = className || "button secondary";
       link.target = "_blank";
       link.rel = "noopener noreferrer";
-      link.textContent = direct ? "Open Video File" : "Open Link";
-      result.appendChild(link);
+      actions.appendChild(link);
+    }
+
+    form.addEventListener("submit", async function (event) {
+      event.preventDefault();
+
+      let url;
+
+      try {
+        url = new URL(input.value.trim());
+
+        if (!["http:", "https:"].includes(url.protocol)) {
+          throw new Error("Invalid protocol");
+        }
+      } catch {
+        showMessage("Please enter a valid http or https URL.");
+        return;
+      }
+
+      actions.replaceChildren();
+      statusBox.style.display = "block";
+      statusBox.textContent = "Trying to access the video file...";
+      submitBtn.disabled = true;
+
+      try {
+        const response = await fetch(url.href);
+
+        if (!response.ok) {
+          throw new Error("The video could not be accessed.");
+        }
+
+        const blob = await response.blob();
+        const type = (blob.type || "").toLowerCase();
+
+        if (!type.startsWith("video/") && !type.includes("octet-stream")) {
+          throw new Error("This URL does not appear to be a direct video file.");
+        }
+
+        const objectUrl = URL.createObjectURL(blob);
+        const download = document.createElement("a");
+
+        download.href = objectUrl;
+        download.download = "clipfetch-video";
+        download.className = "button";
+        download.textContent = "⬇ Download Video";
+        actions.appendChild(download);
+
+        showMessage("Video file accessed. Tap Download Video below.");
+        actions.appendChild(download);
+
+        setTimeout(function () {
+          URL.revokeObjectURL(objectUrl);
+        }, 120000);
+
+      } catch (error) {
+        showMessage(
+          "This link could not be downloaded directly. The website may block access, or this may be a social media post link."
+        );
+
+        addLink("Open Original Link", url.href);
+      } finally {
+        submitBtn.disabled = false;
+      }
     });
-  <script>
-const form = document.getElementById("videoForm");
-const videoInput = document.getElementById("videoUrl");
-const result = document.getElementById("result");
-
-if (document.getElementById("year")) {
-  document.getElementById("year").textContent =
-    new Date().getFullYear();
-}
-
-form.addEventListener("submit", async function (event) {
-  event.preventDefault();
-
-  const link = videoInput.value.trim();
-
-  if (!link) {
-    result.textContent = "Please enter a video URL.";
-    return;
-  }
-
-  let url;
-
-  try {
-    url = new URL(link);
-
-    if (url.protocol !== "https:" && url.protocol !== "http:") {
-      throw new Error("Invalid URL");
-    }
-  } catch {
-    result.textContent = "Please enter a valid video URL.";
-    return;
-  }
-
-  result.textContent = "Checking video link...";
-
-  try {
-    const response = await fetch(url.href);
-
-    if (!response.ok) {
-      throw new Error("Download unavailable");
-    }
-
-    const blob = await response.blob();
-
-    if (!blob.type.startsWith("video/")) {
-      throw new Error("Not a direct video file");
-    }
-
-    const objectUrl = URL.createObjectURL(blob);
-    const downloadLink = document.createElement("a");
-
-    downloadLink.href = objectUrl;
-    downloadLink.download = "video";
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    downloadLink.remove();
-
-    result.textContent = "Download started!";
-
-    setTimeout(() => URL.revokeObjectURL(objectUrl), 60000);
-  } catch (error) {
-    result.textContent =
-      "Direct download is not available for this link. " +
-      "Try a direct video file URL or use the original platform.";
-
-    const openLink = document.createElement("a");
-    openLink.href = url.href;
-    openLink.target = "_blank";
-    openLink.rel = "noopener noreferrer";
-    openLink.textContent = "Open original link";
-    result.appendChild(document.createElement("br"));
-    result.appendChild(openLink);
-  }
-});
-</script>
+  </script>
 </body>
 </html>
