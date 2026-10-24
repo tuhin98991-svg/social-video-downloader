@@ -282,6 +282,80 @@
       link.textContent = direct ? "Open Video File" : "Open Link";
       result.appendChild(link);
     });
-  </script>
+  <script>
+const form = document.getElementById("videoForm");
+const videoInput = document.getElementById("videoUrl");
+const result = document.getElementById("result");
+
+if (document.getElementById("year")) {
+  document.getElementById("year").textContent =
+    new Date().getFullYear();
+}
+
+form.addEventListener("submit", async function (event) {
+  event.preventDefault();
+
+  const link = videoInput.value.trim();
+
+  if (!link) {
+    result.textContent = "Please enter a video URL.";
+    return;
+  }
+
+  let url;
+
+  try {
+    url = new URL(link);
+
+    if (url.protocol !== "https:" && url.protocol !== "http:") {
+      throw new Error("Invalid URL");
+    }
+  } catch {
+    result.textContent = "Please enter a valid video URL.";
+    return;
+  }
+
+  result.textContent = "Checking video link...";
+
+  try {
+    const response = await fetch(url.href);
+
+    if (!response.ok) {
+      throw new Error("Download unavailable");
+    }
+
+    const blob = await response.blob();
+
+    if (!blob.type.startsWith("video/")) {
+      throw new Error("Not a direct video file");
+    }
+
+    const objectUrl = URL.createObjectURL(blob);
+    const downloadLink = document.createElement("a");
+
+    downloadLink.href = objectUrl;
+    downloadLink.download = "video";
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    downloadLink.remove();
+
+    result.textContent = "Download started!";
+
+    setTimeout(() => URL.revokeObjectURL(objectUrl), 60000);
+  } catch (error) {
+    result.textContent =
+      "Direct download is not available for this link. " +
+      "Try a direct video file URL or use the original platform.";
+
+    const openLink = document.createElement("a");
+    openLink.href = url.href;
+    openLink.target = "_blank";
+    openLink.rel = "noopener noreferrer";
+    openLink.textContent = "Open original link";
+    result.appendChild(document.createElement("br"));
+    result.appendChild(openLink);
+  }
+});
+</script>
 </body>
 </html>
